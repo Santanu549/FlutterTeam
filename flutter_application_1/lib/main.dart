@@ -9,16 +9,13 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-      ),
-      home: userForm(),//log_in.dart 
+      title: 'Cargo flow',
+      theme: ThemeData(),
+      home: userForm(), //log_in.dart
     );
   }
 }
-
