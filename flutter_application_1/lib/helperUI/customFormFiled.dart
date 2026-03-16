@@ -13,12 +13,11 @@ class CustomFormFiled extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.06,
             width: MediaQuery.of(context).size.width * wid,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 103, 148, 225),
+              color: Colors.purple[100],
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.white, width: 1)
             ),
             child: TextField(
-              
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hint_text,

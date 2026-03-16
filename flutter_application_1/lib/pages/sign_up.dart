@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/helperUI/cutomTextFiled.dart';
 import 'package:flutter_application_1/helperUI/pageHeader.dart';
+import 'package:flutter_application_1/pages/form.dart';
 import 'package:flutter_application_1/pages/log_in.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -81,7 +82,15 @@ class _SignUpState extends State<SignUp> {
                 });
               },
               onTap: () {
-                setState(() {});
+                setState(() {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: UserForm(),
+                          duration: Duration(milliseconds: 500)));
+
+                });
               },
               child: AnimatedScale(
                 scale: _isLoginPressed ? 0.94 : 1.0,
