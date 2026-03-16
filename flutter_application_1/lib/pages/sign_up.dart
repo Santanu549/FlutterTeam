@@ -1,44 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/helperUI/cutomTextFiled.dart';
 import 'package:flutter_application_1/helperUI/pageHeader.dart';
-import 'package:flutter_application_1/pages/sign_up.dart';
-import 'package:page_transition/page_transition.dart'
-    show PageTransition, PageTransitionType;
+import 'package:flutter_application_1/pages/log_in.dart';
+import 'package:page_transition/page_transition.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SignUpState extends State<SignUp> {
   bool _isLoginPressed = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.indigoAccent,
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Header(), //helperUI/pageHeader.dart
-
+            Header(),
             SizedBox(
               height: 30,
             ),
-
-            Text("Welcome!",
+            Text("Create an account",
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white)),
-
             SizedBox(
               height: 20,
             ),
-
             Center(
                 child: Column(
               children: [
@@ -48,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         Icons.email_outlined)), //helperUI/cutomTextFiled.dart
               ],
             )),
-
             SizedBox(
               height: 20,
             ),
@@ -57,11 +49,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   st: "Password",
                   ic: Icon(Icons.lock_outline)), //helperUI/cutomTextFiled.dart
             ),
-
             SizedBox(
-              height: 30,
+              height: 20,
             ),
-
+            Center(
+              child: MyWidget(
+                  st: "Confirm Password",
+                  ic: Icon(Icons.lock_outline)), //helperUI/cutomTextFiled.dart
+            ),
+            SizedBox(
+              height: 25,
+            ),
             InkWell(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
@@ -112,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   child: Center(
                       child: Text(
-                    "LogIn",
+                    "SignUp",
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -121,27 +119,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-
             SizedBox(
               height: 20,
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Do not have an account? ",
+                  "Already have an account? ",
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 GestureDetector(
                   onTap: () => Navigator.push(
                       context,
                       PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: SignUp(),
+                          type: PageTransitionType.leftToRight,
+                          child: MyHomePage(),
                           duration: Duration(milliseconds: 500))),
                   child: Text(
-                    "SignUp",
+                    "LogIn",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

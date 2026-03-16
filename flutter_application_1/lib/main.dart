@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/form.dart';
 import 'package:flutter_application_1/pages/log_in.dart';
 
 void main() {
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cargo flow',
       theme: ThemeData(),
-      home: userForm(), //log_in.dart
+      home: MyHomePage(), //log_in.dart
     );
   }
 }
