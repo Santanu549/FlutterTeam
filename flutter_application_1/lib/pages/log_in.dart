@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/helperUI/custom_text_field.dart';
 import 'package:flutter_application_1/helperUI/page_header.dart';
 import 'package:flutter_application_1/pages/form.dart';
+import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/sign_up.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/database_service.dart';
 import 'package:flutter_application_1/theme/app_theme.dart';
 import 'package:page_transition/page_transition.dart'
     show PageTransition, PageTransitionType;
@@ -22,6 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  final DatabaseService _databaseService = DatabaseService();
 
   @override
   void dispose() {
@@ -44,16 +47,23 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _isLoading = true);
 
     try {
-      await _authService.signIn(email: email, password: password);
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: UserForm(),
-            duration: Duration(milliseconds: 500),
-          ),
-        );
+      final userCredential = await _authService.signIn(email: email, password: password);
+      final user = userCredential.user;
+
+      if (mounted && user != null) {
+        // Check if driver is registered
+        final isRegistered = await _databaseService.isDriverRegistered(user.uid);
+        
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: isRegistered ? const HomePage() : const UserForm(),
+              duration: const Duration(milliseconds: 500),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

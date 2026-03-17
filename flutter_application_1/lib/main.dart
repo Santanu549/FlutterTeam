@@ -4,6 +4,8 @@ import 'package:flutter_application_1/pages/log_in.dart';
 import 'package:flutter_application_1/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/pages/home_page.dart';
+import 'package:flutter_application_1/services/database_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -36,11 +38,27 @@ class MyApp extends StatelessWidget {
               ),
             );
           }
-          // If user is logged in, go to form page; otherwise, go to login
+          // If user is logged in, check if they are registered in DB
           if (snapshot.hasData) {
-            return UserForm();
+            return FutureBuilder<bool>(
+              future: DatabaseService().isDriverRegistered(snapshot.data!.uid),
+              builder: (context, dbSnapshot) {
+                if (dbSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Scaffold(
+                    backgroundColor: Colors.indigoAccent,
+                    body: Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    ),
+                  );
+                }
+                if (dbSnapshot.data == true) {
+                  return const HomePage();
+                }
+                return const UserForm();
+              },
+            );
           }
-          return MyHomePage();
+          return const MyHomePage();
         },
       ),
     );
