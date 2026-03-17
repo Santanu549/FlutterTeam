@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "941674630786",
+    "project_id": "cargoflow-b9fc3",
+    "storage_bucket": "cargoflow-b9fc3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941674630786:android:b3be41339cbe88c13b2e9b",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD06tl4Apv_wlB_EznVN0RrlrI8NAtEdLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

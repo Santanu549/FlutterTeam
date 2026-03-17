@@ -5,22 +5,25 @@ class CustomFormFiled extends StatelessWidget {
   final String hint_text;
   final double wid;
 
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
             height: MediaQuery.of(context).size.height * 0.06,
             width: MediaQuery.of(context).size.width * wid,
             decoration: BoxDecoration(
-              color: Colors.purple[100],
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white, width: 1)
+              border: Border.all(color: theme.colorScheme.onPrimary, width: 1),
             ),
             child: TextField(
+              style: theme.textTheme.bodyMedium,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hint_text,
+                hintStyle: theme.inputDecorationTheme.hintStyle,
               ),
             ),
           );
