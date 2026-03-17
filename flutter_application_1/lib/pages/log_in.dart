@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/helperUI/cutomTextFiled.dart';
-import 'package:flutter_application_1/helperUI/pageHeader.dart';
+import 'package:flutter_application_1/helperUI/custom_text_field.dart';
+import 'package:flutter_application_1/helperUI/page_header.dart';
 import 'package:flutter_application_1/pages/form.dart';
 import 'package:flutter_application_1/pages/sign_up.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
@@ -88,13 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Header(),
-
             SizedBox(height: 30),
-
             Text("Welcome!", style: theme.textTheme.headlineMedium),
-
             SizedBox(height: 20),
-
             Center(
                 child: Column(
               children: [
@@ -104,9 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     controller: _emailController),
               ],
             )),
-
             SizedBox(height: 20),
-
             Center(
               child: MyWidget(
                   st: "Password",
@@ -114,9 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   controller: _passwordController,
                   obscureText: true),
             ),
-
             SizedBox(height: 30),
-
             _isLoading
                 ? CircularProgressIndicator()
                 : InkWell(
@@ -166,9 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-
             SizedBox(height: 20),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

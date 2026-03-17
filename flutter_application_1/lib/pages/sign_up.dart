@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/helperUI/cutomTextFiled.dart';
-import 'package:flutter_application_1/helperUI/pageHeader.dart';
+import 'package:flutter_application_1/helperUI/custom_text_field.dart';
+import 'package:flutter_application_1/helperUI/page_header.dart';
 import 'package:flutter_application_1/pages/form.dart';
 import 'package:flutter_application_1/pages/log_in.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
@@ -53,8 +53,7 @@ class _SignUpState extends State<SignUp> {
 
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Password must be at least 6 characters')),
+        const SnackBar(content: Text('Password must be at least 6 characters')),
       );
       return;
     }
@@ -107,13 +106,9 @@ class _SignUpState extends State<SignUp> {
         child: Column(
           children: [
             Header(),
-
             SizedBox(height: 30),
-
             Text("Create an account", style: theme.textTheme.headlineMedium),
-
             SizedBox(height: 20),
-
             Center(
                 child: Column(
               children: [
@@ -123,9 +118,7 @@ class _SignUpState extends State<SignUp> {
                     controller: _emailController),
               ],
             )),
-
             SizedBox(height: 20),
-
             Center(
               child: MyWidget(
                   st: "Password",
@@ -133,9 +126,7 @@ class _SignUpState extends State<SignUp> {
                   controller: _passwordController,
                   obscureText: true),
             ),
-
             SizedBox(height: 20),
-
             Center(
               child: MyWidget(
                   st: "Confirm Password",
@@ -143,9 +134,7 @@ class _SignUpState extends State<SignUp> {
                   controller: _confirmPasswordController,
                   obscureText: true),
             ),
-
             SizedBox(height: 25),
-
             _isLoading
                 ? CircularProgressIndicator()
                 : InkWell(
@@ -195,9 +184,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                   ),
-
             SizedBox(height: 20),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

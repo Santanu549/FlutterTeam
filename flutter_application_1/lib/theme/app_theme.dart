@@ -8,9 +8,9 @@ class AppTheme {
   // ─── Brand Colors ───────────────────────────────────────────────
   static const Color primaryColor = Colors.indigoAccent;
   static const Color secondaryColor = Color(0xFF7C4DFF); // deep purple accent
-  static const Color surfaceLight = Color(0xFFE1BEE7);   // purple[100]
+  static const Color surfaceLight = Color(0xFFE1BEE7); // purple[100]
   static const Color scaffoldBg = Colors.indigoAccent;
-  static const Color onPrimary = Colors.white;
+  static const Color onPrimary = Colors.black;
   static const Color errorColor = Color(0xFFFF5252);
   static const Color successColor = Color(0xFF69F0AE);
 
