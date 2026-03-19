@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_application_1/helperUI/custom_form_field.dart';
-import 'package:flutter_application_1/pages/home_page.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/services/database_service.dart';
-import 'package:flutter_application_1/theme/app_theme.dart';
+
+import 'package:cargo_flow/helperUI/custom_form_field.dart';
+import 'package:cargo_flow/pages/home_page.dart';
+import 'package:cargo_flow/services/auth_service.dart';
+import 'package:cargo_flow/services/database_service.dart';
+import 'package:cargo_flow/theme/app_theme.dart';
 
 class UserForm extends StatefulWidget {
   const UserForm({super.key});
@@ -68,12 +68,11 @@ class _UserFormState extends State<UserForm> {
           'address': address,
           'vehicleRegNo': regNo,
           'vehicleType': _selectedVehicleType,
-          'email': user.email,
-          'authUserId': user.uid,
-          'registeredAt': FieldValue.serverTimestamp(),
+          'authUserId': user.id,
+          'registeredAt': DateTime.now().toIso8601String(),
         };
 
-        await _databaseService.registerDriver(user.uid, driverData);
+        await _databaseService.registerDriver(user.id, driverData);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

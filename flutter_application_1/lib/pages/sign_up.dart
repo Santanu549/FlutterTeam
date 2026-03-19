@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/helperUI/custom_text_field.dart';
-import 'package:flutter_application_1/helperUI/page_header.dart';
-import 'package:flutter_application_1/pages/form.dart';
-import 'package:flutter_application_1/pages/log_in.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/theme/app_theme.dart';
+import 'package:cargo_flow/helperUI/custom_text_field.dart';
+import 'package:cargo_flow/helperUI/page_header.dart';
+import 'package:cargo_flow/pages/admin_home_page.dart';
+import 'package:cargo_flow/pages/log_in.dart';
+import 'package:cargo_flow/services/auth_service.dart';
+import 'package:cargo_flow/theme/app_theme.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SignUp extends StatefulWidget {
@@ -70,7 +70,7 @@ class _SignUpState extends State<SignUp> {
           context,
           PageTransition(
             type: PageTransitionType.rightToLeft,
-            child: UserForm(),
+            child: const AdminHomePage(),
             duration: Duration(milliseconds: 500),
           ),
         );
@@ -107,7 +107,7 @@ class _SignUpState extends State<SignUp> {
           children: [
             Header(),
             SizedBox(height: 30),
-            Text("Create an account", style: theme.textTheme.headlineMedium),
+            Text("Admin Registration", style: theme.textTheme.headlineMedium),
             SizedBox(height: 20),
             Center(
                 child: Column(

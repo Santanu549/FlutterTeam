@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/theme/app_theme.dart';
+import 'package:cargo_flow/theme/app_theme.dart';
 
 class MyWidget extends StatelessWidget {
   const MyWidget({

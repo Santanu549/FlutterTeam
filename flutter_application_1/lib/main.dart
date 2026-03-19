@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/form.dart';
-import 'package:flutter_application_1/pages/log_in.dart';
-import 'package:flutter_application_1/theme/app_theme.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_application_1/pages/home_page.dart';
-import 'package:flutter_application_1/services/database_service.dart';
-import 'firebase_options.dart';
+import 'package:cargo_flow/pages/form.dart';
+import 'package:cargo_flow/pages/log_in.dart';
+import 'package:cargo_flow/theme/app_theme.dart';
+import 'package:cargo_flow/pages/home_page.dart';
+import 'package:cargo_flow/services/database_service.dart';
+import 'package:cargo_flow/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
   runApp(const MyApp());
 }
 
@@ -26,11 +20,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cargo flow',
       theme: AppTheme.lightTheme,
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
+      home: StreamBuilder<AppUser?>(
+        stream: AuthService().authStateChanges,
+        initialData: AuthService().currentUser,
         builder: (context, snapshot) {
           // Show a loading indicator while checking auth state
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting && snapshot.data == null) {
             return const Scaffold(
               backgroundColor: Colors.indigoAccent,
               body: Center(
@@ -39,9 +34,9 @@ class MyApp extends StatelessWidget {
             );
           }
           // If user is logged in, check if they are registered in DB
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data != null) {
             return FutureBuilder<bool>(
-              future: DatabaseService().isDriverRegistered(snapshot.data!.uid),
+              future: DatabaseService().isDriverRegistered(snapshot.data!.id),
               builder: (context, dbSnapshot) {
                 if (dbSnapshot.connectionState == ConnectionState.waiting) {
                   return const Scaffold(

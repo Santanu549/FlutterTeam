@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/helperUI/custom_text_field.dart';
-import 'package:flutter_application_1/helperUI/page_header.dart';
-import 'package:flutter_application_1/pages/form.dart';
-import 'package:flutter_application_1/pages/home_page.dart';
-import 'package:flutter_application_1/pages/sign_up.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/services/database_service.dart';
-import 'package:flutter_application_1/theme/app_theme.dart';
+import 'package:cargo_flow/helperUI/custom_text_field.dart';
+import 'package:cargo_flow/helperUI/page_header.dart';
+import 'package:cargo_flow/pages/form.dart';
+import 'package:cargo_flow/pages/home_page.dart';
+import 'package:cargo_flow/pages/sign_up.dart';
+import 'package:cargo_flow/pages/admin_home_page.dart';
+import 'package:cargo_flow/pages/executive_home_page.dart';
+import 'package:cargo_flow/services/auth_service.dart';
+import 'package:cargo_flow/services/database_service.dart';
+import 'package:cargo_flow/theme/app_theme.dart';
 import 'package:page_transition/page_transition.dart'
     show PageTransition, PageTransitionType;
 
@@ -47,33 +49,54 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _isLoading = true);
 
     try {
-      final userCredential = await _authService.signIn(email: email, password: password);
-      final user = userCredential.user;
+      final user = await _authService.signIn(email: email, password: password);
 
-      if (mounted && user != null) {
-        // Check if driver is registered
-        final isRegistered = await _databaseService.isDriverRegistered(user.uid);
-        
-        if (mounted) {
+      if (mounted) {
+        if (user.role == 'admin') {
           Navigator.pushReplacement(
             context,
             PageTransition(
               type: PageTransitionType.rightToLeft,
-              child: isRegistered ? const HomePage() : const UserForm(),
+              child: const AdminHomePage(),
               duration: const Duration(milliseconds: 500),
             ),
           );
+        } else if (user.role == 'executive') {
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: const ExecutiveHomePage(),
+              duration: const Duration(milliseconds: 500),
+            ),
+          );
+        } else {
+          // driver role
+          final isRegistered = await _databaseService.isDriverRegistered(user.id);
+          
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: isRegistered ? const HomePage() : const UserForm(),
+                duration: const Duration(milliseconds: 500),
+              ),
+            );
+          }
         }
       }
     } catch (e) {
       if (mounted) {
         String message = 'Login failed. Please try again.';
-        if (e.toString().contains('user-not-found')) {
+        final errorString = e.toString().toLowerCase();
+        if (errorString.contains('user-not-found') || errorString.contains('user_not_found')) {
           message = 'No account found with this email.';
-        } else if (e.toString().contains('wrong-password') ||
-            e.toString().contains('invalid-credential')) {
+        } else if (errorString.contains('wrong-password') ||
+            errorString.contains('invalid-credential') ||
+            errorString.contains('invalid_credentials')) {
           message = 'Incorrect password.';
-        } else if (e.toString().contains('invalid-email')) {
+        } else if (errorString.contains('invalid-email') || errorString.contains('invalid_email')) {
           message = 'Invalid email address.';
         }
         ScaffoldMessenger.of(context).showSnackBar(

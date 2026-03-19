@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:cargo_flow/services/auth_service.dart';
+import 'package:cargo_flow/services/appwrite_client.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -59,8 +60,41 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _HomePlaceholder extends StatelessWidget {
+class _HomePlaceholder extends StatefulWidget {
   const _HomePlaceholder();
+
+  @override
+  State<_HomePlaceholder> createState() => _HomePlaceholderState();
+}
+
+class _HomePlaceholderState extends State<_HomePlaceholder> {
+  bool _pinging = false;
+
+  Future<void> _sendPing() async {
+    setState(() => _pinging = true);
+    try {
+      await client.ping();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Ping successful! Appwrite is connected.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Ping failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _pinging = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +125,18 @@ class _HomePlaceholder extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text('Logged in as: ${user?.email ?? 'N/A'}'),
+            const SizedBox(height: 30),
+            ElevatedButton.icon(
+              onPressed: _pinging ? null : _sendPing,
+              icon: _pinging
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.wifi_tethering),
+              label: const Text('Send a ping'),
+            ),
           ],
         ),
       ),
