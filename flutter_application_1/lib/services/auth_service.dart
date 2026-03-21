@@ -21,10 +21,10 @@ class AuthService {
   }
 
   AuthService._internal() {
-    _db = TablesDB(client);
+    _db = Databases(client);
     _initSession();
   }
-  late final TablesDB _db;
+  late final Databases _db;
   final StreamController<AppUser?> _authStateController =
       StreamController<AppUser?>.broadcast();
 
@@ -74,20 +74,20 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final result = await _db.listRows(
+    final result = await _db.listDocuments(
       databaseId: appwriteDatabaseId,
-      tableId: appwriteUsersCollectionId,
+      collectionId: appwriteUsersCollectionId,
       queries: [Query.equal('email', email)],
     );
-    if (result.rows.isNotEmpty) {
+    if (result.documents.isNotEmpty) {
       throw Exception('email-already-in-use');
     }
 
     try {
-      final userDoc = await _db.createRow(
+      final userDoc = await _db.createDocument(
         databaseId: appwriteDatabaseId,
-        tableId: appwriteUsersCollectionId,
-        rowId: ID.unique(),
+        collectionId: appwriteUsersCollectionId,
+        documentId: ID.unique(),
         data: {
           'email': email,
           'password': _hashPassword(password),
@@ -108,20 +108,20 @@ class AuthService {
     required String password,
     required String role,
   }) async {
-    final result = await _db.listRows(
+    final result = await _db.listDocuments(
       databaseId: appwriteDatabaseId,
-      tableId: appwriteUsersCollectionId,
+      collectionId: appwriteUsersCollectionId,
       queries: [Query.equal('email', email)],
     );
-    if (result.rows.isNotEmpty) {
+    if (result.documents.isNotEmpty) {
       throw Exception('email-already-in-use');
     }
 
     try {
-      await _db.createRow(
+      await _db.createDocument(
         databaseId: appwriteDatabaseId,
-        tableId: appwriteUsersCollectionId,
-        rowId: ID.unique(),
+        collectionId: appwriteUsersCollectionId,
+        documentId: ID.unique(),
         data: {
           'email': email,
           'password': _hashPassword(password),
@@ -138,17 +138,17 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final result = await _db.listRows(
+    final result = await _db.listDocuments(
       databaseId: appwriteDatabaseId,
-      tableId: appwriteUsersCollectionId,
+      collectionId: appwriteUsersCollectionId,
       queries: [Query.equal('email', email)],
     );
 
-    if (result.rows.isEmpty) {
+    if (result.documents.isEmpty) {
       throw Exception('user-not-found');
     }
 
-    final doc = result.rows.first;
+    final doc = result.documents.first;
     if (doc.data['password'] != _hashPassword(password)) {
       throw Exception('wrong-password');
     }
@@ -162,12 +162,12 @@ class AuthService {
 
   Future<List<AppUser>> getAllUsers() async {
     try {
-      final result = await _db.listRows(
+      final result = await _db.listDocuments(
         databaseId: appwriteDatabaseId,
-        tableId: appwriteUsersCollectionId,
+        collectionId: appwriteUsersCollectionId,
       );
       
-      return result.rows.map((doc) => AppUser(
+      return result.documents.map((doc) => AppUser(
         id: doc.$id,
         email: doc.data['email'] ?? 'Unknown',
         role: doc.data['role'] ?? 'driver',

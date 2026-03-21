@@ -1,4 +1,7 @@
+import 'package:cargo_flow/pages/create_indent.dart';
 import 'package:flutter/material.dart';
+import 'package:cargo_flow/pages/admin_home_page.dart';
+import 'package:cargo_flow/pages/executive_home_page.dart';
 import 'package:cargo_flow/pages/form.dart';
 import 'package:cargo_flow/pages/log_in.dart';
 import 'package:cargo_flow/theme/app_theme.dart';
@@ -35,8 +38,18 @@ class MyApp extends StatelessWidget {
           }
           // If user is logged in, check if they are registered in DB
           if (snapshot.hasData && snapshot.data != null) {
+            final user = snapshot.data!;
+
+            if (user.role == 'admin') {
+              return const AdminHomePage();
+            }
+
+            if (user.role == 'executive') {
+              return const ExecutiveHomePage();
+            }
+
             return FutureBuilder<bool>(
-              future: DatabaseService().isDriverRegistered(snapshot.data!.id),
+              future: DatabaseService().isDriverRegistered(user.id),
               builder: (context, dbSnapshot) {
                 if (dbSnapshot.connectionState == ConnectionState.waiting) {
                   return const Scaffold(
