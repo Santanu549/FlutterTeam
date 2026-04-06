@@ -1,13 +1,14 @@
+import 'package:cargo_flow/services/appwrite_auth_san.dart';
 import 'package:flutter/material.dart';
 import 'package:cargo_flow/helperUI/custom_text_field.dart';
 import 'package:cargo_flow/helperUI/page_header.dart';
-import 'package:cargo_flow/pages/form.dart';
-import 'package:cargo_flow/pages/home_page.dart';
-import 'package:cargo_flow/pages/sign_up.dart';
-import 'package:cargo_flow/pages/admin_home_page.dart';
-import 'package:cargo_flow/pages/executive_home_page.dart';
-import 'package:cargo_flow/services/auth_service.dart';
-import 'package:cargo_flow/services/database_service.dart';
+//import 'package:cargo_flow/pages/form.dart';
+import 'package:cargo_flow/pages/Driver/home_page.dart';
+import 'package:cargo_flow/pages/admin_details/sign_up.dart';
+import 'package:cargo_flow/pages/admin_details/admin_home_page.dart';
+import 'package:cargo_flow/pages/Executive/executive_home_page.dart';
+//import 'package:cargo_flow/services/auth_service.dart';
+//import 'package:cargo_flow/services/database_service.dart';
 import 'package:cargo_flow/theme/app_theme.dart';
 import 'package:page_transition/page_transition.dart'
     show PageTransition, PageTransitionType;
@@ -25,8 +26,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final AuthService _authService = AuthService();
-  final DatabaseService _databaseService = DatabaseService();
+  //final AuthService _authService = AuthService();
+ // final DatabaseService _databaseService = DatabaseService();
+  final AuthServiceAppwrite _appwriteAuthService = AuthServiceAppwrite();
 
   @override
   void dispose() {
@@ -49,10 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _isLoading = true);
 
     try {
-      final user = await _authService.signIn(email: email, password: password);
+      //final user = await _authService.signIn(email: email, password: password);
+      final user = await _appwriteAuthService.login(email, password);
+      final userRole = (await _appwriteAuthService.getUserRole())?.trim() ?? 'driver';
+      print("user role: $userRole");
 
       if (mounted) {
-        if (user.role == 'admin') {
+        if (userRole == 'admin') {
           Navigator.pushReplacement(
             context,
             PageTransition(
@@ -61,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
               duration: const Duration(milliseconds: 500),
             ),
           );
-        } else if (user.role == 'executive') {
+        } else if (userRole == 'executive') {
           Navigator.pushReplacement(
             context,
             PageTransition(
@@ -70,32 +75,43 @@ class _MyHomePageState extends State<MyHomePage> {
               duration: const Duration(milliseconds: 500),
             ),
           );
-        } else {
-          // driver role
-          final isRegistered = await _databaseService.isDriverRegistered(user.id);
-          
-          if (mounted) {
-            Navigator.pushReplacement(
+        }
+         else if (userRole == 'user') {
+          Navigator.pushReplacement(
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: isRegistered ? const HomePage() : const UserForm(),
+                child:  const HomePage(),
+                //child: isRegistered ? const HomePage() : const UserForm(),
                 duration: const Duration(milliseconds: 500),
               ),
             );
-          }
+        } 
+         else {
+          // driver role
+          //final isRegistered = await _databaseService.isDriverRegistered(user.id);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ivalid login. Please contact support.')),
+          );
+          
         }
       }
     } catch (e) {
       if (mounted) {
-        String message = 'Login failed. Please try again.';
+        String message = e.toString().replaceFirst('Exception: ', '');
         final errorString = e.toString().toLowerCase();
         if (errorString.contains('user-not-found') || errorString.contains('user_not_found')) {
           message = 'No account found with this email.';
         } else if (errorString.contains('wrong-password') ||
             errorString.contains('invalid-credential') ||
-            errorString.contains('invalid_credentials')) {
+            errorString.contains('invalid_credentials') ||
+            errorString.contains('invalid credentials') ||
+            errorString.contains('invalid_email_password') ||
+            errorString.contains('password mismatch')) {
           message = 'Incorrect password.';
+        } else if (errorString.contains('session_already_exists') ||
+            errorString.contains('user_session_already_exists')) {
+          message = 'You are already logged in on this device.';
         } else if (errorString.contains('invalid-email') || errorString.contains('invalid_email')) {
           message = 'Invalid email address.';
         }

@@ -14,13 +14,13 @@ class _IndentFromState extends State<IndentFrom> {
   bool _isLoginPressed = false;
   static const Color _fiveImageBackground = Color(0xFF4683D9);
 
-  // 🔹 Controllers
+  //  Controllers
   TextEditingController loadingController = TextEditingController();
   TextEditingController unloadingController = TextEditingController();
 
   String distance = "";
 
-  // 🔹 Convert address → LatLng
+  //  Convert address → LatLng
   Future<Location?> getLocation(String address) async {
     try {
       List<Location> locations = await locationFromAddress(address);
@@ -31,7 +31,7 @@ class _IndentFromState extends State<IndentFrom> {
     }
   }
 
-  // 🔹 Calculate distance
+  //  Calculate distance
   Future<void> calculateDistance() async {
     String from = loadingController.text;
     String to = unloadingController.text;
@@ -181,7 +181,7 @@ class _IndentFromState extends State<IndentFrom> {
 
               SizedBox(height: 20),
 
-              // ✅ Distance Result
+              // Distance Result
               Text(
                 "Distance: $distance",
                 style: TextStyle(

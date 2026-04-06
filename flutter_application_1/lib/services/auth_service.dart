@@ -3,6 +3,14 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cargo_flow/services/appwrite_auth_san.dart';
+import 'package:cargo_flow/services/appwrite_client.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:appwrite/appwrite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cargo_flow/services/appwrite_auth_san.dart';
 import 'package:cargo_flow/services/appwrite_client.dart';
 
 class AppUser {
@@ -54,6 +62,10 @@ class AuthService {
     await prefs.setString('auth_role', user.role);
     _currentUser = user;
     _authStateController.add(_currentUser);
+  }
+
+  Future<void> saveExternalSession(AppUser user) async {
+    await _saveSession(user);
   }
 
   Future<void> _clearSession() async {
@@ -179,6 +191,11 @@ class AuthService {
   }
 
   Future<void> signOut() async {
+    try {
+      await AuthServiceAppwrite().logout();
+    } catch (_) {
+      // Ignore Appwrite logout errors and always clear local state.
+    }
     await _clearSession();
   }
 }

@@ -1,7 +1,8 @@
+import 'package:cargo_flow/services/appwrite_auth_san.dart';
 import 'package:flutter/material.dart';
 import 'package:cargo_flow/helperUI/custom_text_field.dart';
 import 'package:cargo_flow/helperUI/page_header.dart';
-import 'package:cargo_flow/pages/admin_home_page.dart';
+import 'package:cargo_flow/pages/admin_details/admin_home_page.dart';
 import 'package:cargo_flow/pages/log_in.dart';
 import 'package:cargo_flow/services/auth_service.dart';
 import 'package:cargo_flow/theme/app_theme.dart';
@@ -22,6 +23,7 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final AuthServiceAppwrite _authServiceAppwrite = AuthServiceAppwrite();
   final AuthService _authService = AuthService();
 
   @override
@@ -31,7 +33,7 @@ class _SignUpState extends State<SignUp> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-
+/*
   Future<void> _handleSignUp() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -77,7 +79,75 @@ class _SignUpState extends State<SignUp> {
       }
     } catch (e) {
       if (mounted) {
-        String message = 'Sign up failed. Please try again.';
+        String message = e.toString().replaceFirst('Exception: ', '');
+        if (e.toString().contains('email-already-in-use')) {
+          message = 'An account already exists with this email.';
+        } else if (e.toString().contains('invalid-email')) {
+          message = 'Invalid email address.';
+        } else if (e.toString().contains('weak-password')) {
+          message = 'Password is too weak.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+*/
+
+
+
+  Future<void> _handleSignUpNew() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 6 characters')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      //await _authService.signUp(email: email, password: password);
+      await _authServiceAppwrite.register( email, password);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created successfully!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: const AdminHomePage(),
+            duration: Duration(milliseconds: 500),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        String message = e.toString().replaceFirst('Exception: ', '');
         if (e.toString().contains('email-already-in-use')) {
           message = 'An account already exists with this email.';
         } else if (e.toString().contains('invalid-email')) {
@@ -151,7 +221,7 @@ class _SignUpState extends State<SignUp> {
                     onTapCancel: () {
                       setState(() => _isLoginPressed = false);
                     },
-                    onTap: _handleSignUp,
+                    onTap: _handleSignUpNew,
                     child: AnimatedScale(
                       scale: _isLoginPressed ? 0.94 : 1.0,
                       duration: Duration(milliseconds: 120),
