@@ -1,8 +1,10 @@
+import 'package:appwrite/models.dart' as models;
 import 'package:flutter/material.dart';
 import 'package:cargo_flow/services/auth_service.dart';
 import 'package:cargo_flow/pages/create_indent.dart';
 import 'package:cargo_flow/pages/log_in.dart';
 import 'package:cargo_flow/services/appwrite_auth_san.dart';
+import 'package:cargo_flow/services/indent_service.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -19,6 +21,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
   bool _isLoadingUsers = true;
   List<Map<String, dynamic>> _users = [];
   final _appwriteAuthService = AuthServiceAppwrite();
+  final _indentService = IndentService();
 
   //final AuthService _authService = AuthService();
 
@@ -226,10 +229,175 @@ class _AdminHomePageState extends State<AdminHomePage> {
     );
   }
 
-  void _openCreateIndent() {
-    Navigator.push(
+  Future<void> _openCreateIndent() async {
+    final created = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const IndentFrom()),
+    );
+
+    if (created == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Indent created successfully')),
+      );
+    }
+  }
+
+  Future<void> _showIndentList() async {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        final theme = Theme.of(sheetContext);
+        final colorScheme = theme.colorScheme;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Indent List',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(sheetContext),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Flexible(
+                  child: FutureBuilder<List<models.Row>>(
+                    future: _indentService.getIndents(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(24),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            snapshot.error.toString(),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final indents = snapshot.data ?? <models.Row>[];
+                      if (indents.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.all(24),
+                          child: Text('No indents found.'),
+                        );
+                      }
+
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: indents.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final row = indents[index];
+                          final data = row.data;
+                          final customerName =
+                              (data['name'] ?? 'Unknown').toString();
+                          final loadingPoint =
+                              (data['lpoint'] ?? '').toString();
+                          final unloadingPoint =
+                              (data['upoint'] ?? '').toString();
+                          final status =
+                              (data['status'] ?? 'pending').toString();
+                          final time = (data['time'] ?? '').toString();
+                          final statusBackground = status == 'accepted'
+                              ? colorScheme.primaryContainer
+                              : status == 'rejected'
+                                  ? colorScheme.errorContainer
+                                  : colorScheme.secondaryContainer;
+                          final statusForeground = status == 'accepted'
+                              ? colorScheme.onPrimaryContainer
+                              : status == 'rejected'
+                                  ? colorScheme.onErrorContainer
+                                  : colorScheme.onSecondaryContainer;
+
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: colorScheme.outlineVariant,
+                              ),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              leading: CircleAvatar(
+                                backgroundColor: colorScheme.primaryContainer,
+                                child: Icon(
+                                  Icons.receipt_long_rounded,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              title: Text(
+                                customerName,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  'From: $loadingPoint\nTo: $unloadingPoint\nTime: $time',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                              isThreeLine: true,
+                              trailing: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusBackground,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  status.toUpperCase(),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: statusForeground,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -239,6 +407,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
     final user = authService.currentUser;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final appBarColor = Color.alphaBlend(
+      colorScheme.primary.withValues(alpha: 0.20),
+      colorScheme.surface,
+    );
     final executiveCount =
         _users.where((u) => (u['role'] ?? '').toString() == 'executive').length;
     final driverCount =
@@ -249,6 +421,24 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: appBarColor,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leading: PopupMenuButton<String>(
+          icon: const Icon(Icons.menu),
+          onSelected: (value) {
+            if (value == 'indents') {
+              _showIndentList();
+            }
+          },
+          itemBuilder: (context) => const [
+            PopupMenuItem<String>(
+              value: 'indents',
+              child: Text('View Indents'),
+            ),
+          ],
+        ),
         title: const Text('Admin Dashboard'),
         actions: [
           IconButton(
@@ -270,6 +460,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
+              appBarColor,
               colorScheme.surface,
               colorScheme.surfaceContainerLowest,
             ],
@@ -602,13 +793,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton.extended(
-            heroTag: 'create_indent_fab',
-            onPressed: _openCreateIndent,
-            icon: const Icon(Icons.note_add_rounded),
-            label: const Text('Create Indent'),
-          ),
-          const SizedBox(height: 12),
           FloatingActionButton.extended(
             heroTag: 'create_user_fab',
             onPressed: _showCreateUserDialog,

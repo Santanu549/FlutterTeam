@@ -7,12 +7,20 @@ class CustomFormField extends StatelessWidget {
     required this.wid,
     this.controller,
     this.keyboardType,
+    this.onTap,
+    this.readOnly = false,
+    this.suffixIcon,
+    this.onChanged,
   });
 
   final String hintText;
-  final double wid; // Percentage of screen width (0.0 to 1.0)
+  final double wid;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
+  final VoidCallback? onTap;
+  final bool readOnly;
+  final Widget? suffixIcon;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +32,9 @@ class CustomFormField extends StatelessWidget {
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
+        onTap: onTap,
+        onChanged: onChanged,
+        readOnly: readOnly,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w500,
         ),
@@ -34,14 +45,13 @@ class CustomFormField extends StatelessWidget {
           ),
           filled: true,
           fillColor: colorScheme.surface,
+          suffixIcon: suffixIcon,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          // Default Border
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1),
           ),
-          // Border when the user clicks the field
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: colorScheme.primary, width: 2),

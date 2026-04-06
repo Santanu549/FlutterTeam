@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:cargo_flow/services/auth_service.dart';
-
 import 'package:cargo_flow/pages/log_in.dart';
+import 'package:cargo_flow/services/appwrite_auth_san.dart';
 
-class ExecutiveHomePage extends StatelessWidget {
+class ExecutiveHomePage extends StatefulWidget {
   const ExecutiveHomePage({super.key});
+
+  @override
+  State<ExecutiveHomePage> createState() => _ExecutiveHomePageState();
+}
+
+class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   @override
   Widget build(BuildContext context) {
     final authService = AuthService();
     final user = authService.currentUser;
+    final appwriteAuthService = AuthServiceAppwrite();
 
     return Scaffold(
       appBar: AppBar(
@@ -18,7 +25,7 @@ class ExecutiveHomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await authService.signOut();
+              await appwriteAuthService.logout();
               if (context.mounted) {
                 Navigator.pushAndRemoveUntil(
                   context,
